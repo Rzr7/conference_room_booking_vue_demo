@@ -1,12 +1,17 @@
-import axios from 'axios';
+import axios, { AxiosRequestHeaders } from 'axios';
 
-export default axios.create({
-  baseURL: 'http://localhost:8080/api',
-  timeout: 1000,
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem('token')}`,
-  },
-});
+const axiosClient = () => {
+  const headers : AxiosRequestHeaders = {};
+  if (localStorage.getItem('token')) {
+    headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
+  }
+
+  return axios.create({
+    baseURL: 'http://localhost:8080/api',
+    timeout: 1000,
+    headers: headers,
+  });
+};
 
 axios.interceptors.response.use((response) => response, (error) => {
   if ([401, 403].includes(error.response.status)) {
@@ -14,3 +19,5 @@ axios.interceptors.response.use((response) => response, (error) => {
   }
   return Promise.reject(error);
 });
+
+export default axiosClient();

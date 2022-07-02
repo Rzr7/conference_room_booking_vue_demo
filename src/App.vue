@@ -5,18 +5,12 @@
 <script setup>
 import { onMounted } from 'vue';
 import useAuthStore from '@/store/AuthStore';
+import useRoomStore from '@/store/RoomStore';
 
 onMounted(() => {
   const authStore = useAuthStore();
+  const roomStore = useRoomStore();
   authStore.loadUserData();
+  roomStore.loadRooms();
 });
 </script>
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-</style>

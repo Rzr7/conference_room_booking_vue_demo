@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
+import { AxiosResponse } from 'axios';
 import axiosClient from '@/helpers/http-common';
 import { ITokenResponse, IUser } from '@/types/user.types';
-import { AxiosResponse } from 'axios';
 
 const loginUrl = '/auth/login';
 const registerUrl = '/auth/register';
@@ -16,26 +16,19 @@ const useAuthStore = defineStore('authStore', {
     isLoggedIn: !!localStorage.getItem('token'),
   }),
   actions: {
-    async login(username: string, password: string) {
-      const tokenDetails : AxiosResponse<ITokenResponse> = await axiosClient.post(
+    login(username: string, password: string) {
+      axiosClient.post(
         loginUrl,
         {
           username: username,
           password: password,
         },
-      );
-      // update pinia state
-      const tokenString = tokenDetails.data.token;
-      this.username = username;
-      this.token = tokenString;
-      this.isLoggedIn = true;
-
-      localStorage.setItem('token', tokenString);
-      // redirect to previous url or default to home page
-      window.location.href = '/';
+      ).then((tokenDetails : AxiosResponse<ITokenResponse>) => {
+        this.setLoggedIn(tokenDetails.data.token);
+      });
     },
-    async register(username: string, password: string, name: string, birthdate: string) {
-      const tokenDetails : AxiosResponse<ITokenResponse> = await axiosClient.post(
+    register(username: string, password: string, name: string, birthdate: string) {
+      axiosClient.post(
         registerUrl,
         {
           username: username,
@@ -43,28 +36,24 @@ const useAuthStore = defineStore('authStore', {
           name: name,
           birthdate: birthdate,
         },
-      );
-      // update pinia state
-      const tokenString = tokenDetails.data.token;
-      this.username = username;
-      this.token = tokenString;
-      this.isLoggedIn = true;
-
-      localStorage.setItem('token', tokenString);
-      // redirect to previous url or default to home page
+      ).then((tokenDetails : AxiosResponse<ITokenResponse>) => {
+        this.setLoggedIn(tokenDetails.data.token);
+      });
+    },
+    setLoggedIn(token: string) {
+      localStorage.setItem('token', token);
       window.location.href = '/';
     },
     logout() {
-      this.token = null;
-      this.isLoggedIn = false;
       localStorage.removeItem('token');
       window.location.href = '/login';
     },
-    async loadUserData() {
-      const userDetails : AxiosResponse<IUser> = await axiosClient.get(userDetailsUrl);
-      this.username = userDetails.data.username;
-      this.name = userDetails.data.name;
-      this.birthdate = userDetails.data.birthdate;
+    loadUserData() {
+      axiosClient.get(userDetailsUrl).then((userDetails: AxiosResponse<IUser>) => {
+        this.username = userDetails.data.username;
+        this.name = userDetails.data.name;
+        this.birthdate = userDetails.data.birthdate;
+      });
     },
   },
 });
