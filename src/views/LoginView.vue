@@ -13,7 +13,7 @@
               <el-input v-model="authForm.username" />
             </el-form-item>
             <el-form-item label="Password">
-              <el-input v-model="authForm.password" />
+              <el-input type="password" v-model="authForm.password" />
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="onSubmit">Sign In</el-button>
@@ -36,6 +36,7 @@
                 type="date"
                 placeholder="Birthdate"
                 format="DD.MM.YYYY"
+                value-format="YYYY-MM-DD"
                 style="width: 100%;"
                 :default-value="new Date(1999, 1, 11)"
               />

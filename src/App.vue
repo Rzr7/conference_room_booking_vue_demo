@@ -6,11 +6,16 @@
 import { onMounted } from 'vue';
 import useAuthStore from '@/store/AuthStore';
 import useRoomStore from '@/store/RoomStore';
+import useConferenceStore from '@/store/ConferenceStore';
 
 onMounted(() => {
   const authStore = useAuthStore();
   const roomStore = useRoomStore();
-  authStore.loadUserData();
-  roomStore.loadRooms();
+  const conferenceStore = useConferenceStore();
+  if (authStore.isLoggedIn) {
+    authStore.loadUserData();
+    roomStore.loadRooms();
+    conferenceStore.loadConferences();
+  }
 });
 </script>

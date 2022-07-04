@@ -8,7 +8,7 @@
         <el-input v-model="roomForm.location" />
       </el-form-item>
       <el-form-item label="Capacity">
-        <el-input type="number" v-model="roomForm.capacity" />
+        <el-input-number v-model="roomForm.capacity" :min="1" />
       </el-form-item>
     </el-form>
     <template #footer>
@@ -22,7 +22,7 @@
 
 <script lang="ts" setup>
 import { reactive, defineProps, defineEmits } from 'vue';
-import { IRoomForm } from '@/types/room.types';
+import { IRoom } from '@/types/room.types';
 
 const emit = defineEmits(['closeDialog', 'onSubmit']);
 
@@ -33,7 +33,7 @@ const props = defineProps({
   },
 });
 
-const roomForm = reactive<IRoomForm>({
+const roomForm = reactive<IRoom>({
   name: '',
   location: '',
   capacity: 0,

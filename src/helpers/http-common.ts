@@ -8,7 +8,7 @@ const axiosClient = () => {
 
   return axios.create({
     baseURL: 'http://localhost:8080/api',
-    timeout: 1000,
+    timeout: 3000,
     headers: headers,
   });
 };

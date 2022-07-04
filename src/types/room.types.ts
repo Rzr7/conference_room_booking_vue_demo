@@ -1,12 +1,11 @@
 export interface IRoom {
-  id: number,
+  id?: number,
   name: string,
   location: string,
   capacity: number,
 }
 
-export interface IRoomForm {
-  name: string,
-  location: string,
-  capacity: number,
+export interface ITimeSlot {
+  from: Date,
+  to: Date,
 }

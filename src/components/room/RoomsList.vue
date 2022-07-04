@@ -11,6 +11,21 @@
     <el-table-column prop="name" label="Name" width="180" />
     <el-table-column prop="location" label="Location" />
     <el-table-column prop="capacity" label="Capacity" />
+    <el-table-column prop="actions" label="Actions">
+      <template #default="scope">
+        <el-button type="primary" size="small" @click="onRoomEdit(scope.row.id)">
+          Edit
+        </el-button>
+        <el-popconfirm
+          title="Are you sure to delete this?"
+          @confirm="onRoomDelete(scope.row.id)"
+        >
+          <template #reference>
+            <el-button type="danger" size="small">Delete</el-button>
+          </template>
+        </el-popconfirm>
+      </template>
+    </el-table-column>
   </el-table>
 
   <room-form-dialog
@@ -22,8 +37,8 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { IRoomForm } from '@/types/room.types';
-import RoomFormDialog from '@/components/RoomFormDialog.vue';
+import { IRoom } from '@/types/room.types';
+import RoomFormDialog from '@/components/room/RoomFormDialog.vue';
 import useRoomStore from '@/store/RoomStore';
 
 const roomStore = useRoomStore();
@@ -37,7 +52,16 @@ const closeFormDialog = () => {
   isFormOpened.value = false;
 };
 
-const onCreate = (roomForm: IRoomForm) => {
+const onCreate = (roomForm: IRoom) => {
   roomStore.createRoom(roomForm).then(() => closeFormDialog());
+};
+
+const onRoomDelete = (roomId: number) => {
+  roomStore.deleteRoom(roomId);
+};
+
+const onRoomEdit = (roomId: number) => {
+  console.log(`Edit: ${roomId}`);
+  openFormDialog();
 };
 </script>
