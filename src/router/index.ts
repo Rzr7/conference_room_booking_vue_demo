@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import AppView from '@/views/AppView.vue';
 import ManageRoomsView from '@/views/ManageRoomsView.vue';
-import ConferencesView from '@/views/ConferencesView.vue';
+import ConferencesListView from '@/views/ConferencesListView.vue';
+import ConferenceView from '@/views/ConferenceView.vue';
 import useAuthStore from '@/store/AuthStore';
 
 const routes: Array<RouteRecordRaw> = [
@@ -20,7 +21,13 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/conference',
     name: 'conferences',
-    component: ConferencesView,
+    component: ConferencesListView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/conference/:conferenceId',
+    name: 'conference-view',
+    component: ConferenceView,
     meta: { requiresAuth: true },
   },
   {

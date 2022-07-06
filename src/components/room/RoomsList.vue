@@ -7,8 +7,8 @@
     :data="roomStore.rooms"
     style="width: 100%"
   >
-    <el-table-column prop="id" label="ID" width="180" />
-    <el-table-column prop="name" label="Name" width="180" />
+    <el-table-column prop="id" label="ID" width="50" />
+    <el-table-column prop="name" label="Name" />
     <el-table-column prop="location" label="Location" />
     <el-table-column prop="capacity" label="Capacity" />
     <el-table-column prop="actions" label="Actions">

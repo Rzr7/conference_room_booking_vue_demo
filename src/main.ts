@@ -14,13 +14,13 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 /* import specific icons */
 import {
-  faRightFromBracket, faListCheck, faCalendarPlus, faTable,
+  faRightFromBracket, faListCheck, faCalendarPlus, faTable, faClock, faMinus,
 } from '@fortawesome/free-solid-svg-icons';
 import router from './router';
 import App from './App.vue';
 
 /* add icons to the library */
-library.add(faRightFromBracket, faListCheck, faCalendarPlus, faTable);
+library.add(faRightFromBracket, faListCheck, faCalendarPlus, faTable, faClock, faMinus);
 
 const pinia = createPinia();
 

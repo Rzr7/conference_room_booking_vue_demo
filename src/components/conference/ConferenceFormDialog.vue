@@ -69,7 +69,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="emit('closeDialog')">Cancel</el-button>
-        <el-button type="primary" @click="onCreate">Submit</el-button>
+        <el-button type="primary" @click="onCreateOrUpdate">Submit</el-button>
       </span>
     </template>
   </el-dialog>
@@ -77,13 +77,18 @@
 
 <script lang="ts" setup>
 import {
-  defineEmits, defineProps, reactive, ref,
+  defineEmits, defineProps, reactive, ref, onMounted,
 } from 'vue';
 import { IConferenceRequest } from '@/types/conference.types';
 import useRoomStore from '@/store/RoomStore';
-import { differenceInMinutes } from '@/helpers/time-operations';
+import {
+  differenceInMinutes,
+  getHumanTime,
+  getRequestDate,
+  incrementDuration,
+} from '@/helpers/time-operations';
 import useConferenceStore from '@/store/ConferenceStore';
-import { ITimeSlot } from '@/types/room.types';
+import { IRoom, ITimeSlot } from '@/types/room.types';
 
 const bookedTimes = ref<ITimeSlot[]>([]);
 const roomStore = useRoomStore();
@@ -114,11 +119,30 @@ const form = reactive<IConferenceRequest>({
   roomId: roomStore.rooms[0]?.id || 0,
 });
 
-const onCreate = () => {
+onMounted(() => {
+  if (props.id) {
+    conferenceStore.getConferenceData(props.id).then((conferenceData) => {
+      form.name = conferenceData.name;
+      const bookedAt = String(conferenceData.booked_at);
+      bookDate.value = bookedAt;
+      startTime.value = getHumanTime(bookedAt);
+      endTime.value = getHumanTime(incrementDuration(bookedAt, conferenceData.duration));
+      form.duration = conferenceData.duration;
+      bookRoom.value = (conferenceData.room as IRoom)?.id || 0;
+    });
+  }
+});
+
+const onCreateOrUpdate = () => {
   form.duration = differenceInMinutes(startTime.value, endTime.value);
-  form.bookedAt = `${bookDate.value} ${startTime.value}`;
+  form.bookedAt = `${getRequestDate(bookDate.value)} ${startTime.value}`;
   form.roomId = bookRoom.value;
-  conferenceStore.createConference(form).then(() => emit('closeDialog'));
+  if (props.id) {
+    form.id = props.id;
+    conferenceStore.updateConference(form).then(() => emit('closeDialog'));
+  } else {
+    conferenceStore.createConference(form).then(() => emit('closeDialog'));
+  }
 };
 
 const onRoomOrDateChange = async () => {
@@ -128,11 +152,7 @@ const onRoomOrDateChange = async () => {
   }
 };
 
-const getTimeRangeString = (timeSlot: ITimeSlot) => {
-  const from = new Date(timeSlot.from);
-  const to = new Date(timeSlot.to);
-  return `${String(from.getHours()).padStart(2, '0')}:${String(from.getMinutes()).padStart(2, '0')} - ${String(to.getHours()).padStart(2, '0')}:${String(to.getMinutes()).padStart(2, '0')}`;
-};
+const getTimeRangeString = (timeSlot: ITimeSlot) => `${getHumanTime(timeSlot.from)} - ${getHumanTime(timeSlot.to)}`;
 
 const validateTime = () => {
   if (!(startTime.value && endTime.value)) {

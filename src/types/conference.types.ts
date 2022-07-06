@@ -8,10 +8,11 @@ export interface IConference {
   duration: number,
   room: IRoom | number,
   owner: IUser | number,
-  persons: IUser[] | number[],
+  persons: IUser[],
 }
 
 export interface IConferenceRequest {
+  id?: number,
   name: string,
   bookedAt: string,
   duration: number,

@@ -28,8 +28,6 @@ const useRoomStore = defineStore('roomStore', {
         } else {
           ElMessage.error('Oops, something went wrong.');
         }
-      }).catch((error) => {
-        ElMessage.error(error.response.data.message || error.message);
       });
     },
     deleteRoom(roomId: number) {
@@ -43,8 +41,6 @@ const useRoomStore = defineStore('roomStore', {
         } else {
           ElMessage.error('Oops, something went wrong.');
         }
-      }).catch((error) => {
-        ElMessage.error(error.response.data.message || error.message);
       });
     },
     removeFromState(roomId: number) : IRoom | null {
