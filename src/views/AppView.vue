@@ -1,8 +1,0 @@
-<template>
-  <view-layout>
-  </view-layout>
-</template>
-
-<script lang="ts" setup>
-import ViewLayout from '@/components/common/ViewLayout.vue';
-</script>

@@ -42,9 +42,9 @@ const useConferenceStore = defineStore('conferenceStore', {
         }
       });
     },
-    updateConference(conferenceForm: IConferenceRequest) {
+    updateConference(conferenceId: number, conferenceForm: IConferenceRequest) {
       return axiosClient.put(
-        '/conference',
+        `/conference/${conferenceId}`,
         conferenceForm,
       ).then((conferenceDetails : AxiosResponse<IConference>) => {
         if (conferenceDetails.data.id) {
@@ -95,6 +95,22 @@ const useConferenceStore = defineStore('conferenceStore', {
         return null;
       }
       return null;
+    },
+    transferOwnership(conferenceId: number, transferTo: IUser) {
+      return axiosClient.put(
+        `/conference/${conferenceId}/owner/${transferTo.id}`,
+      ).then((conferenceDetails : AxiosResponse<IConference>) => {
+        if (conferenceDetails.data.id) {
+          const confIndex = this.conferences.findIndex((conference) => conference.id === conferenceDetails.data.id);
+          this.conferences[confIndex] = conferenceDetails.data;
+          ElMessage({
+            message: `Ownership of ${conferenceDetails.data.name} transferred to ${(conferenceDetails.data.owner as IUser).name}!`,
+            type: 'success',
+          });
+        } else {
+          ElMessage.error('Oops, something went wrong.');
+        }
+      });
     },
     addAttendee(conferenceId: number, attendee: IUser) {
       return axiosClient.post(

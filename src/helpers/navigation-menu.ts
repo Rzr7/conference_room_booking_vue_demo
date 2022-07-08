@@ -9,7 +9,7 @@ export interface INavItem {
 
 export const nav : INavItem[] = [
   {
-    index: '/conference',
+    index: '/',
     icon: 'fa-list-check',
     title: 'Conferences',
   },
@@ -22,6 +22,6 @@ export const nav : INavItem[] = [
     index: '/logout',
     icon: 'fa-right-from-bracket',
     title: 'Log out',
-    htmlClass: '!absolute bottom-0 w-full',
+    htmlClass: 'absolute bottom-0 w-full',
   },
 ];

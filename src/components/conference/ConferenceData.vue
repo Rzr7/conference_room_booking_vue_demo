@@ -4,10 +4,12 @@
       <div class="card-header">
         <span>{{ title }}</span>
         <div>
-          <el-button class="button" type="primary" @click="isEditFormOpened = true">Edit</el-button>
+          <el-button v-if="isOwner" class="button" type="primary" @click="isTransferFormOpened = true">Transfer</el-button>
+          <el-button v-if="isOwner" class="button" type="primary" @click="isEditFormOpened = true">Edit</el-button>
           <el-popconfirm
             title="Are you sure to delete this?"
             @confirm="onConferenceDelete(props.conferenceId)"
+            v-if="isOwner"
           >
             <template #reference>
               <el-button type="danger" class="button">Delete</el-button>
@@ -24,15 +26,28 @@
     <div class="text item">Attendees ({{ persons?.length + '/' + room?.capacity }}):</div>
     <div class="text item pad-left" v-for="(person, index) in persons" v-bind:key="person">
       {{ index + 1 }}. {{ person?.name }}
-      <el-button type="danger" circle size="small" @click="onAttendeeRemove(person?.id)">
+      <el-button v-if="isOwner" type="danger" circle size="small" @click="onAttendeeRemove(person?.id)">
         <template #icon>
           <font-awesome-icon icon="fa-solid fa-minus" />
         </template>
       </el-button>
     </div>
-    <el-button v-if="persons.length < room.capacity" type="primary" size="small" @click="isAttendeeFormOpened = true" round>Add person</el-button>
+    <el-button v-if="isOwner && persons.length < room.capacity" type="primary" size="small" @click="isAttendeeFormOpened = true" round>Add person</el-button>
   </el-card>
-  <user-attendee-form v-model="isAttendeeFormOpened" @close-dialog="onAttendeeFormClose" @on-submit="onAttendeeFormSubmit" />
+  <user-select-form
+    v-model="isAttendeeFormOpened"
+    @close-dialog="onAttendeeFormClose"
+    @on-submit="onAttendeeFormSubmit"
+    title="Add new attendee"
+    label="Select attendee"
+  />
+  <user-select-form
+    v-model="isTransferFormOpened"
+    @close-dialog="onTransferFormClose"
+    @on-submit="onTransferFormSubmit"
+    title="Transfer conference ownership"
+    label="Select new owner"
+  />
   <conference-form-dialog
     v-model="isEditFormOpened"
     :id="props.conferenceId"
@@ -50,8 +65,9 @@ import { getHumanDateTime } from '@/helpers/time-operations';
 import { IRoom } from '@/types/room.types';
 import { IUser } from '@/types/user.types';
 import router from '@/router';
-import UserAttendeeForm from '@/components/user/UserAttendeeForm.vue';
+import UserSelectForm from '@/components/user/UserSelectForm.vue';
 import ConferenceFormDialog from '@/components/conference/ConferenceFormDialog.vue';
+import useAuthStore from '@/store/AuthStore';
 
 const props = defineProps({
   conferenceId: {
@@ -59,9 +75,11 @@ const props = defineProps({
     required: true,
   },
 });
+const authStore = useAuthStore();
 const conferenceStore = useConferenceStore();
 const conferenceData = ref<IConference>();
 const isAttendeeFormOpened = ref(false);
+const isTransferFormOpened = ref(false);
 const isEditFormOpened = ref(false);
 const isLoaded = ref(false);
 
@@ -84,6 +102,7 @@ const duration = computed(() => (conferenceData.value ? `${conferenceData.value?
 const room = computed(() => (conferenceData.value ? (conferenceData.value?.room as IRoom) : ''));
 const owner = computed(() => (conferenceData.value ? (conferenceData.value?.owner as IUser) : ''));
 const persons = computed(() => (conferenceData.value ? (conferenceData.value?.persons as IUser[]) : []));
+const isOwner = computed(() => (conferenceData.value ? (conferenceData.value?.owner as IUser).username === authStore.username : false));
 
 const onConferenceDelete = (conferenceId: number) => {
   conferenceStore.deleteConference(conferenceId).then(() => {
@@ -95,8 +114,19 @@ const onAttendeeFormClose = () => {
   isAttendeeFormOpened.value = false;
 };
 
+const onTransferFormClose = () => {
+  isTransferFormOpened.value = false;
+};
+
 const onAttendeeFormSubmit = (attendee: IUser) => {
   conferenceStore.addAttendee(props.conferenceId, attendee).then(() => {
+    updateConferenceData();
+    onAttendeeFormClose();
+  });
+};
+
+const onTransferFormSubmit = (transferTo: IUser) => {
+  conferenceStore.transferOwnership(props.conferenceId, transferTo).then(() => {
     updateConferenceData();
     onAttendeeFormClose();
   });

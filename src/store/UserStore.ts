@@ -13,6 +13,10 @@ const useUserStore = defineStore('userStore', {
         this.users = usersList.data;
       });
     },
+    getUser(userId: number) {
+      const userIndex = this.users.findIndex((user) => user.id === userId);
+      return this.users[userIndex];
+    },
   },
 });
 

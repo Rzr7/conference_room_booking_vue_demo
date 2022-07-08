@@ -138,8 +138,7 @@ const onCreateOrUpdate = () => {
   form.bookedAt = `${getRequestDate(bookDate.value)} ${startTime.value}`;
   form.roomId = bookRoom.value;
   if (props.id) {
-    form.id = props.id;
-    conferenceStore.updateConference(form).then(() => emit('closeDialog'));
+    conferenceStore.updateConference(props.id, form).then(() => emit('closeDialog'));
   } else {
     conferenceStore.createConference(form).then(() => emit('closeDialog'));
   }

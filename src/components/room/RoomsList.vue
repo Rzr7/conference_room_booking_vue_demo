@@ -1,6 +1,6 @@
 <template>
   <el-row class="mb-4">
-    <el-button type="success" @click="openFormDialog">New Room</el-button>
+    <el-button type="success" @click="onRoomCreate">New Room</el-button>
   </el-row>
 
   <el-table
@@ -31,18 +31,18 @@
   <room-form-dialog
     v-model="isFormOpened"
     @closeDialog="closeFormDialog"
-    @onSubmit="onCreate"
+    :id="editRoomId"
   />
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { IRoom } from '@/types/room.types';
 import RoomFormDialog from '@/components/room/RoomFormDialog.vue';
 import useRoomStore from '@/store/RoomStore';
 
 const roomStore = useRoomStore();
 const isFormOpened = ref(false);
+const editRoomId = ref(0);
 
 const openFormDialog = () => {
   isFormOpened.value = true;
@@ -52,16 +52,17 @@ const closeFormDialog = () => {
   isFormOpened.value = false;
 };
 
-const onCreate = (roomForm: IRoom) => {
-  roomStore.createRoom(roomForm).then(() => closeFormDialog());
-};
-
 const onRoomDelete = (roomId: number) => {
   roomStore.deleteRoom(roomId);
 };
 
 const onRoomEdit = (roomId: number) => {
-  console.log(`Edit: ${roomId}`);
+  editRoomId.value = roomId;
+  openFormDialog();
+};
+
+const onRoomCreate = () => {
+  editRoomId.value = 0;
   openFormDialog();
 };
 </script>

@@ -10,6 +10,21 @@
   >
     <el-table-column prop="id" label="ID" width="50" />
     <el-table-column prop="name" label="Name" />
+    <el-table-column prop="room" label="Room">
+      <template #default="scope">
+        {{ scope.row.room.name }} ({{ scope.row.room.location}})
+      </template>
+    </el-table-column>
+    <el-table-column prop="attendees" label="Attendees">
+      <template #default="scope">
+        {{ scope.row.persons.length }}/{{ scope.row.room.capacity }}
+      </template>
+    </el-table-column>
+    <el-table-column prop="owner" label="Owner">
+      <template #default="scope">
+        {{ scope.row.owner.name }}
+      </template>
+    </el-table-column>
     <el-table-column prop="bookedAt" label="Booked for">
       <template #default="scope">
         <div style="display: flex; align-items: center">

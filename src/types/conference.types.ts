@@ -12,7 +12,6 @@ export interface IConference {
 }
 
 export interface IConferenceRequest {
-  id?: number,
   name: string,
   bookedAt: string,
   duration: number,
