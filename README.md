@@ -1,4 +1,4 @@
-# conference_rooms_booking_frontned
+# conference_rooms_booking_frontend
 
 Backend: https://github.com/Rzr7/conference_room_booking_java_demo
 
